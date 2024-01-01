@@ -1,16 +1,54 @@
-name: Deploy blog from Obsidian
+inputs:
+  vault-path: Obsidian/
+    required: true
+    type: string
+  external-repository:
+    required: true
+    type: string
+  github-token:
+    required: true
+    type: string
 
-on:
-  push:
-    branches:
-      - main
+runs:
+  using: "composite"
+  steps:
+    - uses: actions/checkout@v3
+      with:
+        submodules: true 
+        fetch-depth: 0
 
-jobs:
-  publish_job:
-    runs-on: ubuntu-latest
-    name: Publish Obsidian notes to Github pages
-    steps:
-      - uses: haxrob/obsidian-to-hugo-pages@v0.1.3
-        with:
-          vault-path: obsidian-vault
-          github-token: ${{ secrets.GITHUB_TOKEN }}
+    - name: Cache cargo plugins
+      id: cache-obsidian-export
+      uses: actions/cache@v1
+      with:
+        path: ~/.cargo/bin/
+        key: ${{ runner.os }}-cargo-plugins
+
+    - name: Install obsidian-export
+      if: steps.cache-obsidian-export.outputs.cache-hit != 'true'
+      uses: actions-rs/install@v0.1
+      with:
+        crate: obsidian-export
+        version: latest
+    
+    - name: Create posts dir if not exists
+      shell: bash
+      run: mkdir -p ./content/posts
+
+    - name: Create layout fix directory
+      shell: bash
+      run: mkdir -p layouts/_default/_markup/
+
+    - name: Obsidian layout fixes for images and links
+      uses: actions/checkout@v3
+      with:
+        repository: haxrob/obsidian-to-hugo-pages
+        path: layout
+
+    - name: Copy over layout fixes to correct path
+      shell: bash
+      run: cp layout/layout/* layouts/_default/_markup/
+
+    - name: Export Vault
+      shell: bash
+      run: obsidian-export ./${{ inputs.vault-path }} ./content/posts 
