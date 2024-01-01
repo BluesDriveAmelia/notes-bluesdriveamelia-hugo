@@ -3,6 +3,9 @@ name: Export Obsidian Notes to Hugo
 on:
   workflow_call:
     inputs:
+      vault-path:
+        required: true
+        type: string
       external-repository:
         required: true
         type: string
@@ -48,4 +51,4 @@ jobs:
         run: cp layout/layout/* layouts/_default/_markup/
 
       - name: Export Vault
-        run: obsidian-export ./${{ inputs.obsidian }} ./content/posts
+        run: obsidian-export ./${{ inputs.vault-path }} ./content/posts
