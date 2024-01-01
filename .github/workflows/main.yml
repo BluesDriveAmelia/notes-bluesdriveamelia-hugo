@@ -3,7 +3,7 @@ name: Export Obsidian Notes to Hugo
 on:
   workflow_call:
     inputs:
-      vault-path: Obsidian
+      vault-path: 'Obsidian'
         required: true
         type: string
       external-repository:
