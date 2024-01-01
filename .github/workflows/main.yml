@@ -1,5 +1,5 @@
 inputs:
-  vault-path: Obsidian/
+  vault-path: 'Obsidian/'
     required: true
     type: string
   external-repository:
