@@ -1,5 +1,4 @@
 const fs = require('fs');
-const glob = require('glob');
 
 function replacePrefix(filePath) {
   const content = fs.readFileSync(filePath, 'utf-8');
@@ -7,7 +6,9 @@ function replacePrefix(filePath) {
   fs.writeFileSync(filePath, modifiedContent);
 }
 
-const filesToProcess = glob.sync('content/posts/**/*.md');
+const filesToProcess = fs.readdirSync('content/posts')
+  .filter(file => file.endsWith('.md'))
+  .map(file => `content/posts/${file}`);
 
 filesToProcess.forEach(file => {
   replacePrefix(file);
