@@ -1,51 +1,32 @@
-name: Export Obsidian Notes to Hugo
+name: Replace Prefix in Content
 
 on:
-  workflow_call:
-    inputs:
-      external-repository:
-        required: true
-        type: string
+  push:
+    branches:
+      - main
 
 jobs:
-  deploy:
-    runs-on: ubuntu-22.04
-    concurrency:
-      group: ${{ github.workflow }}-${{ github.ref }}
+  replace-prefix:
+    runs-on: ubuntu-latest
+
     steps:
-      - uses: actions/checkout@v3
+      - name: Checkout repository
+        uses: actions/checkout@v2
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v2
         with:
-          submodules: true
-          fetch-depth: 0
+          node-version: '14'
 
-      - name: Cache cargo plugins
-        id: cache-obsidian-export
-        uses: actions/cache@v1
-        with:
-          path: ~/.cargo/bin/
-          key: ${{ runner.os }}-cargo-plugins
+      - name: Install dependencies
+        run: npm install glob
 
-      - name: Install obsidian-export
-        if: steps.cache-obsidian-export.outputs.cache-hit != 'true'
-        uses: actions-rs/install@v0.1
-        with:
-          crate: obsidian-export
-          version: latest
+      - name: Execute script
+        run: node replace_prefix.js
 
-      - name: Create content directory for export
-        run: mkdir -p content/posts
-
-      - name: Create layout fix directory
-        run: mkdir -p layouts/_default/_markup/
-
-      - name: Obsidian layout fixes for images and links
-        uses: actions/checkout@v3
-        with:
-          repository: x1sec/obsidian-to-hugo-action
-          path: layout
-
-      - name: Copy over layout fixes to correct path
-        run: cp layout/layout/* layouts/_default/_markup/
-
-      - name: Export Vault
-        run: obsidian-export ./${{ inputs.'Obsidian' }} ./content/posts
+      - name: Commit changes
+        run: |
+          git config --global user.name "GitHub Actions"
+          git config --global user.email "actions@github.com"
+          git add -A
+          git diff --quiet && git diff --staged --quiet || git commit -m "Replace /posts/images prefix"
