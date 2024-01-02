@@ -9,7 +9,7 @@ share: "true"
 Note Origin Platform: Obsidian Vault 2023
 ---
 
-replacedsuccessfully replacedsuccessfully replacedsuccessfully
+  
 
 On 2023-11-16 I was browsing the "Anime" tag on Steam and stumbled upon the game demo "Unbeatable \[White Label]". It's just a demo, though it does have it's own listing on Steam. The full game doesn't even have it's own listing yet. This demo came out two years ago and there is no ETA on the full game. I came across reviews and some of the reviewers had tens of hours logged into the game. I thought "I can't imagine ever spending that much time on a demo, no matter how good it is". Then, within perhaps mere minutes of opening the game, I understood.
 ![600](../images/pk6xm1Rd3z.png)
